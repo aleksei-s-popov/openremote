@@ -130,31 +130,40 @@ docker compose down
 
 ### Option A (recommended): Remote-managed tunnel using a token
 
-1. In Cloudflare dashboard:
+1. **Create the Tunnel in Cloudflare Zero Trust:**
+   * Log in to the [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/).
+   * Navigate to **Networks** → **Tunnels**.
+   * Click **Add a Tunnel** (or **Create a tunnel**).
+   * Choose **Cloudflared** and click **Next**.
+   * Enter a **Tunnel name** (e.g., `omo-server`) and click **Save tunnel**.
 
-   * Go to **Zero Trust** → **Networks** → **Tunnels**
-   * Create a new tunnel (choose **cloudflared**)
-   * Choose Docker as the connector method and copy the **token**
+2. **Retrieve the Token:**
+   * Under **Choose your environment**, select **Docker**.
+   * Look for the command starting with `docker run...`.
+   * **Copy only the token string** found after `--token` (it's a long base64 string).
+   * Put this token into your `.env` file:
+     ```bash
+     CF_TUNNEL_TOKEN=your_copied_token_here
+     ```
 
-2. Put token into `.env`:
+3. **Start the Tunnel:**
+   * Run the following command to start the stack with the tunnel enabled:
+     ```bash
+     docker compose --profile tunnel up -d --build
+     ```
 
-```bash
-CF_TUNNEL_TOKEN=...your_token...
-```
+4. **Configure Public Hostname:**
+   * Go back to your tunnel settings in Cloudflare (click **Next** or find your tunnel in the list and click **Edit**).
+   * Go to the **Public Hostname** tab and click **Add a public hostname**.
+   * Fill in the following:
+     * **Subdomain:** `code` (or your preferred prefix)
+     * **Domain:** `yourdomain.com`
+     * **Path:** (leave empty)
+     * **Service Type:** `HTTP`
+     * **URL:** `proxy:80`
+   * Click **Save hostname**.
 
-3. Start with the tunnel profile:
-
-```bash
-docker compose --profile tunnel up -d --build
-```
-
-4. In Cloudflare Zero Trust (tunnel settings), add a **Public Hostname**:
-
-   * `hostname`: `code.yourdomain.com`
-   * `service`: `http://proxy:8080`
-
-Now you should be able to open:
-
+Now you should be able to open your server at:
 * [https://code.yourdomain.com/](https://code.yourdomain.com/)
 
 ### Add Cloudflare Access (strongly recommended)
@@ -239,7 +248,7 @@ Then open:
 ### Non-root containers
 
 * OpenCode/terminal run as user `dev` from the Dockerfile.
-* Proxy runs as a non-root user (see `proxy/Dockerfile`) and listens on `8080`.
+* Proxy (Caddy) listens on port `80` inside its container.
 
 ### CORS
 
@@ -271,7 +280,7 @@ On macOS Docker Desktop, make sure the repo folder is allowed in:
 ### Cloudflare shows 502 / “Host error”
 
 * Confirm `cloudflared` is on the same Docker network as `proxy`
-* Confirm your Cloudflare “service” points to `http://proxy:8080`
+* Confirm your Cloudflare “service” points to `http://proxy:80`
 * Check logs:
 
 ```bash
@@ -343,7 +352,7 @@ Pick a license that fits your intent (MIT is common for templates).
 
 # Appendix: The “non-root proxy” image (proxy/Dockerfile)
 
-This makes sure the proxy itself does not run as root and listens on port 8080.
+This makes sure the proxy itself does not run as root and listens on port 80.
 
 ```dockerfile
 FROM caddy:2-alpine
@@ -355,7 +364,7 @@ RUN addgroup -g 10001 caddyuser && adduser -D -H -u 10001 -G caddyuser caddyuser
 RUN mkdir -p /data /config && chown -R 10001:10001 /data /config
 
 USER 10001:10001
-EXPOSE 8080
+EXPOSE 80
 
 CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
 ```
@@ -364,10 +373,10 @@ CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile
 
 # Appendix: Proxy config note (Caddyfile)
 
-Make sure your Caddyfile listens on `:8080` (unprivileged port), e.g.:
+Make sure your Caddyfile listens on `:80` (unprivileged port), e.g.:
 
 ```caddyfile
-:8080 {
+:80 {
   # ...
 }
 ```

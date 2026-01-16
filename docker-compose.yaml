@@ -95,7 +95,9 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     profiles: ["tunnel"]
-    command: ["tunnel", "run", "--token", "${CF_TUNNEL_TOKEN}"]
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    command: ["tunnel", "--protocol", "http2", "run"]
     depends_on:
       - proxy
     networks:
