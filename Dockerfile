@@ -12,8 +12,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git openssh-client bash zsh tini \
       ripgrep jq unzip \
-      python3 make g++ \
+      python3 python3-venv make g++ \
     && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 # Install Bun (globally for the binary)
 # We use a temporary env var so it doesn't persist as /usr/local for the user
@@ -73,14 +76,17 @@ WORKDIR /workspace
 COPY scripts/ /usr/local/bin/
 RUN chmod +x /usr/local/bin/*.sh
 
-# Configure Bun for the non-root user
+# Configure Bun and uv for the non-root user
 ENV BUN_INSTALL=/home/${USER}/.bun
-ENV PATH=${BUN_INSTALL}/bin:${PATH}
+ENV PATH=${BUN_INSTALL}/bin:/home/${USER}/.local/bin:${PATH}
 
 USER ${USER}
 
 # Pre-install oh-my-opencode with bun to ensure it's available and bun works
 RUN bun install -g oh-my-opencode
+
+# Install spec-kit (specify-cli)
+RUN uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
 EXPOSE 4096
 

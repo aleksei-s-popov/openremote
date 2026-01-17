@@ -1,14 +1,17 @@
-# Oh-My-OpenCode (TanStack) — secure-ish “code from your phone” Docker setup
+# Oh-My-OpenCode local — secure-ish “code from your phone” Docker setup
 
-A self-hosted, **headless OpenCode server with the Oh-My-OpenCode harness**, pre-configured with the **Sisyphus orchestrator agent** and **common language servers for a TanStack app**, plus:
+A self-hosted, **OpenCode server with the Oh-My-OpenCode harness**, pre-configured with the **Sisyphus orchestrator agent**, **Spec Kit** and **common language servers**, with web interface, ssh and Neovim. Plus:
 
 - **Multi-agent orchestration** (via Oh-My-OpenCode)
+- **Multi-Antigravity and Gemini accounts support** (via opencode-antigravity-auth) for multiple free tiers
+- **spec-kit** support
+- **sRalph Wiggum Autonomous Loop for AI Coding** support, integrated with **spec-kit**
 - **Reverse proxy with HTTP Basic Auth** (Caddy)
 - Optional **web terminal** (`ttyd`)
 - Optional **Cloudflare Tunnel** for public access without opening inbound ports
 - Optional **web “stack manager”** (Dockge) *behind a separate auth gate* (with socket proxy for security)
 
-> Goal: run on a home **Mac Studio** (Docker Desktop), but remain a general solution.
+> Goal: run on a home **PC/Mac** (Docker Desktop), connect to local model if needed and vibe code nonstop from a laptop or phone.
 
 ---
 
@@ -205,6 +208,17 @@ If you want to reach your app dev server from your phone, you have two approache
 
 1. Add another proxy route in `Caddyfile` to forward `/app/*` to your Vite dev server port
 2. Or expose the Vite port through Cloudflare separately (less ideal)
+
+### Spec-Kit (Specify CLI) support
+
+This image comes with [spec-kit](https://github.com/github/spec-kit) pre-installed via the `specify` CLI. It supports Spec-Driven Development (SDD) with OpenCode.
+
+To initialize spec-kit in your project:
+1. Open the web terminal.
+2. Run: `specify init --ai opencode`
+3. Follow the prompts.
+
+This will create `.opencode/command/` with slash commands like `/speckit.constitution`, `/speckit.specify`, etc., which you can use directly in the OpenCode web UI.
 
 ---
 
