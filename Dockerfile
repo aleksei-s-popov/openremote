@@ -11,9 +11,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git openssh-client openssh-server sudo bash zsh tini \
-      ripgrep jq unzip \
-      python3 python3-venv make g++ \
+      ripgrep jq unzip zip \
+      python3 python3-venv python3-pip make g++ \
       tmux \
+      liblua5.1-0-dev \
+      fd-find fzf luarocks \
+    && ln -s $(which fdfind) /usr/local/bin/fd \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh
@@ -50,6 +53,7 @@ RUN curl -fsSL https://opencode.ai/install | bash && \
 RUN corepack enable && \
     npm install -g \
       oh-my-opencode \
+      tree-sitter-cli \
       typescript \
       typescript-language-server \
       vscode-langservers-extracted \

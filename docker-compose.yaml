@@ -20,6 +20,7 @@ services:
     build: .
     ports:
       - "2222:22"  # SSH access
+      - "5173:5173" # Vite dev server
     expose:
       - "5173"     # Vite dev server (accessed via proxy, not exposed to host)
     environment:

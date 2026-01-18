@@ -142,6 +142,7 @@ docker compose down
 ### Local SSH Access
 
 ```bash
+# ssh-keygen -R "[localhost]:2222"
 ssh -p 2222 dev@localhost
 ```
 
@@ -158,6 +159,7 @@ Host opencode-local
 
 Then:
 ```bash
+# ssh-keygen -R "[localhost]:2222"
 ssh opencode-local
 ```
 
