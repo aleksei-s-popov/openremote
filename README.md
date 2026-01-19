@@ -299,16 +299,16 @@ cd /workspace/project
 specify init . --ai opencode
 
 # Establish project principles
-opencode /speckit.constitution "{your project's governing principles and development guidelines}"
+opencode run "/speckit.constitution {your project's governing principles and development guidelines}"
 
 # Create Specification
-opencode /speckit.specify "{describe what you want to build}"
+opencode run "/speckit.specify {describe what you want to build}"
 
 # Create technical plans
-opencode /speckit.plan "{describe technical plan and spec}"
+opencode run "/speckit.plan {describe technical plan and spec}"
 
 # Generate tasks
-opencode /speckit.tasks
+opencode run "/speckit.tasks"
 
 # Execute tasks implementation withing Ralph Wiggum loop
 ralph -i=<max-iterations>
@@ -316,7 +316,8 @@ ralph -i=<max-iterations>
 # Repeat from /speckit.specify
 ```
 
-*Optional Slak integration*
+
+**Optional Slak integration:**
 
 If you want to get notifications on Ralph Wiggum iterations add Slack webhook URL to `RALPH_SLACK_WEBHOOK_URL` in `.env`
 
