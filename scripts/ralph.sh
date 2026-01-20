@@ -59,8 +59,11 @@ notify "--- Ralph Wiggum Loop for Github Opencode Spec Kit Started ---"
 #  return 1
 #}
 
-PROMPT=$(
-  cat <<EOF
+if [[ -n "${RALPH_PROMPT}" ]]; then
+  PROMPT="${RALPH_PROMPT}"
+else
+  PROMPT=$(
+    cat <<EOF
 /speckit.implement
 
 Rules for the implementation run :
@@ -70,9 +73,9 @@ Rules for the implementation run :
 6) When one task is done, or if there are no tasks to start, stop and exit.
 
 ONLY WORK ON A SINGLE SPEKKIT TASK.
-If all the tasks from spekkit are finished and there no tasks to start, output: <promise>COMPLETE</promise>
 EOF
-)
+  )
+fi
 
 cd /workspace/project
 
