@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh
 
+# Install tmuxp for session management
+RUN pip3 install --break-system-packages tmuxp
+
 # Install Neovim (nightly has ARM64 support, stable doesn't)
 RUN set -eux; \
   case "$TARGETARCH" in \
@@ -101,6 +104,10 @@ WORKDIR /workspace
 # Entrypoint
 COPY scripts/ /usr/local/bin/
 RUN chmod +x /usr/local/bin/*.sh
+
+# Copy tmux session config
+RUN mkdir -p /scripts
+COPY scripts/session.yaml /scripts/session.yaml
 
 # Configure Bun and uv for the non-root user
 ENV BUN_INSTALL=/home/${USER}/.bun

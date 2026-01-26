@@ -1,0 +1,9 @@
+session_name: openremote
+start_directory: /workspace/project
+windows:
+  - window_name: opencode
+    panes:
+      - shell_command: opencode web --hostname 0.0.0.0 --port 4096
+  - window_name: tui
+    panes:
+      - shell_command: opencode

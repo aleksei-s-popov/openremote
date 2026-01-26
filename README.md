@@ -241,12 +241,32 @@ The container includes **neovim** (nightly) and **tmux** pre-installed.
 docker compose up -d --build
 ```
 
-**Using tmux:**
+**Auto-starting tmux sessions:**
+
+On container startup, a base tmux session `openremote` is automatically created with:
+- `opencode` window: OpenCode web UI (port 4096)
+- `tui` window: OpenCode TUI
+
+If your project has a `session.yaml` in root (`/workspace/project/session.yaml`), it will also be loaded automatically. This allows project-specific tmux sessions.
+
+Example project `session.yaml`:
+```yaml
+session_name: myproject
+start_directory: /workspace/project
+windows:
+  - window_name: dev
+    panes:
+      - shell_command: pnpm dev --host 0.0.0.0
+  - window_name: shell
+    panes:
+      - shell_command: bash
+```
+
+**Attaching to tmux sessions:**
 ```bash
 ssh opencode-local
-cd /workspace/project
-tmux new -s dev
-nvim .
+tmux ls                    # List all sessions
+tmux attach -t openremote  # Attach to base session
 ```
 
 ### Ralph Wiggum Autonomous Loop with Spec Kit

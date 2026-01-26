@@ -131,16 +131,15 @@ if [[ -n "${GITHUB_REPO_URL:-}" ]]; then
    fi
 fi
 
-case "${1:-}" in
-  opencode-web|web)
-    shift || true
-    exec opencode web --hostname "${OPENCODE_HOST}" --port "${OPENCODE_PORT}" "${cors_flags[@]}" "$@"
-    ;;
-  opencode-serve|serve)
-    shift || true
-    exec opencode serve --hostname "${OPENCODE_HOST}" --port "${OPENCODE_PORT}" "${cors_flags[@]}" "$@"
-    ;;
-  *)
-    exec "$@"
-    ;;
-esac
+# Start base tmux session (opencode web + TUI)
+echo "Starting base tmux session..."
+tmuxp load -d /scripts/session.yaml
+
+# Load project-specific session if exists
+if [[ -f "/workspace/project/session.yaml" ]]; then
+  echo "Found project session.yaml, loading..."
+  tmuxp load -d /workspace/project/session.yaml
+fi
+
+# Keep container alive
+exec sleep infinity
