@@ -126,10 +126,18 @@ RUN sudo -u ${USER} bash -c "export BUN_INSTALL=/home/${USER}/.bun && export PAT
 # Install spec-kit (specify-cli)
 RUN sudo -u ${USER} bash -c "export PATH=/home/${USER}/.local/bin:\$PATH && uv tool install specify-cli --from git+https://github.com/github/spec-kit.git"
 
+RUN sudo -u ${USER} bash /usr/local/bin/install-superpowers.sh
+
+# Install Playwright for clawd.bot browser tool
+RUN npm install -g playwright && \
+    npx playwright install-deps chromium
+
+# Install clawd.bot (requires Node 22+)
+RUN sudo -u ${USER} bash -c "curl -fsSL https://clawd.bot/install-cli.sh | bash"
 # Add PATH exports to .bashrc for SSH sessions (Docker ENV doesn't apply to SSH login shells)
 RUN echo 'export PATH="$HOME/.bun/bin:$HOME/.local/bin:$HOME/.linuxbrew/bin:$HOME/.linuxbrew/sbin:$PATH"' >> /home/${USER}/.bashrc
 
-EXPOSE 4096 22
+EXPOSE 4096 22 18789
 
 ENTRYPOINT ["/usr/bin/tini","--","/usr/local/bin/entrypoint.sh"]
 CMD ["opencode-web"]
